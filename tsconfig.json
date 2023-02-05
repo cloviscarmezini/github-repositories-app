@@ -18,6 +18,9 @@
       ],
       "@global/*": [
         "./src/global/*"
+      ],
+      "@store/*": [
+        "./src/store/*"
       ]
     }
   },

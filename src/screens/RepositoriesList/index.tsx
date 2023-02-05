@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 
-import axios from 'axios';
-import { ActivityIndicator, Alert, Dimensions, FlatList } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList } from 'react-native';
 
-import { RepositoryDTO } from '@dtos/RepositoryDTO';
 import { RepositoryItem } from '@components/RepositoryItem';
 import { Searchbar } from '@components/Searchbar';
 import { EmptyRepositoriesList } from '@components/EmptyRepositoriesList';
@@ -15,65 +13,41 @@ import {
     Main
 } from './styles';
 
+import { useDispatch, useSelector } from 'react-redux';
+
+import { ReduxState } from '@store/index';
+import { fetchRepositoriesRequest } from '@store/modules/repositories/actions';
+import { RepositoriesState } from '@store/modules/repositories/types';
+
 const REPOSITORY_ITEM_SIZE = 74;
 
 export function RepositoriesList() {
-    const [repositories, setRepositories] = useState<RepositoryDTO[]>([]);
+    const { items: repositories, isLoading } = useSelector<ReduxState, RepositoriesState>(state => state.repositories)
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
-    const [isLoading, setIsLoading] = useState(false);
+
+    const dispatch = useDispatch();
 
     const itemsPerView = Math.round(Dimensions.get('screen').height / REPOSITORY_ITEM_SIZE + 3);
 
-    async function fetchRepositories(page = 1) {
-        try {
-            setIsLoading(true);
-            const response = await axios.get(`https://api.github.com/search/repositories?q=${searchTerm}&per_page=${itemsPerView}&page=${page}&order=asc`);
-
-            return response.data.items.reverse() as RepositoryDTO[];
-        } catch(error) {
-            throw error;
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
-    async function getRepositories() {
-        if(!searchTerm) {
-            return setRepositories([]);
-        }
-
-        const repositories = await fetchRepositories().catch(error=> {
-            Alert.alert('Ocorreu um erro ao buscar os repositórios')
-        });
-
-        if(repositories) {
-            setRepositories(repositories)
-        }
-    }
-
-    async function getRepositoriesNextPages() {
+    async function getRepositories(isUpdating = false) {
         if(isLoading) {
             return;
         }
 
-        const newPage = page + 1;
-        
-        const newRepositories = await fetchRepositories(newPage).catch(error=> {
-            Alert.alert('Ocorreu um erro ao buscar os repositórios')
-        });
+        let newPage = page;
 
-        if(newRepositories) {
-            const withDuplicatesList = [...repositories, ...newRepositories];
-    
-            const withoutDuplicatesList = new Map(
-                withDuplicatesList.map(value=> [value['id'], value])
-            )
-    
-            setRepositories(Array.from(withoutDuplicatesList.values()))
+        if(isUpdating) {
+            newPage += 1;
+            setPage(newPage);
         }
 
-        setPage(newPage);
+        dispatch(fetchRepositoriesRequest({
+            isUpdating,
+            itemsPerView,
+            page: newPage,
+            searchTerm
+        }))
     }
 
     return (
@@ -83,7 +57,7 @@ export function RepositoriesList() {
 
                 <Searchbar
                     onChangeText={setSearchTerm}
-                    onBlur={getRepositories}
+                    onBlur={() => getRepositories(false)}
                 />
             </Header>
             <Main>
@@ -95,7 +69,7 @@ export function RepositoriesList() {
                     showsVerticalScrollIndicator={false}
                     onEndReached={({ distanceFromEnd }) => {
                         if (distanceFromEnd < 0) return;
-                        getRepositoriesNextPages()
+                        getRepositories(true)
                     }}
                     onEndReachedThreshold={0}
                     contentContainerStyle={{
