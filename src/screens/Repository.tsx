@@ -1,7 +1,9 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
 import React from 'react';
+
+import { RoutesProps } from '@routes/index';
+
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
-import { RoutesProps } from 'src/routes';
 
 type RepositoryScreenRouteProp = RouteProp<RoutesProps, 'repository'>;
 

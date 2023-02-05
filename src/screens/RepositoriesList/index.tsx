@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
+
+import axios from 'axios';
+import { ActivityIndicator, Alert, Dimensions, FlatList } from 'react-native';
+
+import { RepositoryDTO } from '@dtos/RepositoryDTO';
+import { RepositoryItem } from '@components/RepositoryItem';
+import { Searchbar } from '@components/Searchbar';
+import { EmptyRepositoriesList } from '@components/EmptyRepositoriesList';
+
 import {
     Container,
     Header,
     Title,
     Main
 } from './styles';
-
-import { RepositoryItem } from '../../components/RepositoryItem';
-import axios from 'axios';
-import { ActivityIndicator, Alert, Dimensions, FlatList } from 'react-native';
-import { RepositoryDTO } from 'src/dtos/RepositoryDTO';
-import { Searchbar } from '../../components/Searchbar';
-import { EmptyRepositoriesList } from '../../components/EmptyRepositoriesList';
 
 const REPOSITORY_ITEM_SIZE = 74;
 
@@ -88,7 +90,7 @@ export function RepositoriesList() {
                 <FlatList
                     keyboardShouldPersistTaps="never"
                     data={repositories}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => String(item.id)}
                     renderItem={({ item })=><RepositoryItem repository={item}/>}
                     showsVerticalScrollIndicator={false}
                     onEndReached={({ distanceFromEnd }) => {

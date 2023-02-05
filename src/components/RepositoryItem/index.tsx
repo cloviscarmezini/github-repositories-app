@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { RepositoryDTO } from '../../dtos/RepositoryDTO';
+import { RepositoryDTO } from '@dtos/RepositoryDTO';
+
+import { NavigatorRoutesProps } from '@routes/index';
 
 import {
     Container,
@@ -11,7 +13,6 @@ import {
     Stars,
     Line
 } from './styles';
-import { NavigatorRoutesProps } from 'src/routes';
 
 interface RepositoryItemProps {
     repository: RepositoryDTO

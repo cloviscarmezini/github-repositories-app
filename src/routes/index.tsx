@@ -1,10 +1,10 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator, NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Text } from "react-native";
-import { HeaderContent } from "../components/HeaderContent";
-import { RepositoryDTO } from "src/dtos/RepositoryDTO";
-import { RepositoriesList } from "../screens/RepositoriesList";
-import { Repository } from "../screens/Repository";
+
+import { HeaderContent } from "@components/HeaderContent";
+import { RepositoryDTO } from "@dtos/RepositoryDTO";
+import { RepositoriesList } from "@screens/RepositoriesList";
+import { Repository } from "@screens/Repository";
 
 export type RoutesProps = {
     home: undefined;
